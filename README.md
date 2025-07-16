@@ -7,7 +7,7 @@ This is the frontend for the Beaconfire Project built with Vite and React.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/beaconfireProject/frontend.git
+   git clone https://github.com/beaconfireProject/Frontend-Main.git
    cd frontend
 
 2. Install dependencies:
