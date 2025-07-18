@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 interface Comment {
-  id: number; // This is facilityReportDetailId
+  id: number; // facilityReportDetailId
   comment: string;
-  createdBy: string;
+  createdBy: string | null; // null for HR
   createDate: string;
   lastModifiedDate?: string;
 }
@@ -12,7 +12,6 @@ interface Comment {
 interface CommentListProps {
   facilityReportId: number;
 }
-
 
 const CommentList: React.FC<CommentListProps> = ({ facilityReportId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -23,10 +22,9 @@ const CommentList: React.FC<CommentListProps> = ({ facilityReportId }) => {
     const token = localStorage.getItem("token");
 
     axios
-      .get(
-        `http://localhost:9000/api/housing/facility-report/${facilityReportId}/comments`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+      .get(`http://localhost:9000/api/housing/facility-report/${facilityReportId}/comments`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((res) => setComments(res.data))
       .catch((err) => console.error("Failed to fetch comments:", err));
   };
@@ -59,30 +57,34 @@ const CommentList: React.FC<CommentListProps> = ({ facilityReportId }) => {
   return (
     <div>
       <h4>Comments</h4>
-      {comments.map((c) => (
-        <div key={c.id} style={{ marginBottom: "10px" }}>
-          <strong>{c.createdBy}</strong> -{" "}
-          <em>{c.lastModifiedDate || c.createDate}</em>
-          <div>
-            {editingCommentId === c.id ? (
-              <>
-                <textarea
-                  value={editedText}
-                  onChange={(e) => setEditedText(e.target.value)}
-                />
-                <button onClick={() => handleSave(c.id)}>Save</button>
-              </>
-            ) : (
-              <>
-                <p>{c.comment}</p>
-                <button onClick={() => handleEdit(c.id, c.comment)}>
-                  Edit
-                </button>
-              </>
-            )}
+      {comments.map((c) => {
+        const isHR = c.createdBy === null;
+
+        return (
+          <div key={c.id} style={{ marginBottom: "10px" }}>
+            <strong>{isHR ? "HR" : "Employee"}</strong>{" "}
+            - <em>{c.lastModifiedDate || c.createDate}</em>
+            <div>
+              {editingCommentId === c.id ? (
+                <>
+                  <textarea
+                    value={editedText}
+                    onChange={(e) => setEditedText(e.target.value)}
+                  />
+                  <button onClick={() => handleSave(c.id)}>Save</button>
+                </>
+              ) : (
+                <>
+                  <p>{c.comment}</p>
+                  {!isHR && (
+                    <button onClick={() => handleEdit(c.id, c.comment)}>Edit</button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
