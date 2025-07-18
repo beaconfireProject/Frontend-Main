@@ -1,5 +1,5 @@
 export type Contact = {
-  id: string | null;
+  id: string;
   firstName: string;
   lastName: string;
   cellPhone: string;
@@ -10,7 +10,7 @@ export type Contact = {
 };
 
 export type Address = {
-  id: string | null;
+  id: string;
   addressLine1: string;
   addressLine2: string | null;
   city: string;
@@ -19,16 +19,16 @@ export type Address = {
 };
 
 export type VisaStatus = {
-  id: string | null;
+  id: string;
   visaType: string;
   activeFlag: boolean;
   startDate: string;
-  endDate: string | null;
+  endDate: string;
   lastModificationDate: string | null;
 };
 
-export type Document = {
-  id: string | null;
+export type PersonalDocument = {
+  id: string;
   path: string;
   title: string;
   comment: string | null;
@@ -58,7 +58,7 @@ export type Employee = {
   contact: Contact[];
   address: Address[];
   visaStatus: VisaStatus[];
-  personalDocument: Document[];
+  personalDocument: PersonalDocument[];
 };
 
 export interface DtoSuccess<T> {

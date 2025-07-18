@@ -3,7 +3,7 @@ import {type Employee, type Document, type VisaStatus, type Contact, type Addres
 
 export const getAllEmployees = async (): Promise<Employee[]> => {
   try {
-    const response = await axiosInstance.get<DtoSuccess<Employee[]>>('/api/employee');
+    const response = await axiosInstance.get<DtoSuccess<Employee[]>>('/api/employees');
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -17,7 +17,7 @@ export const getAllEmployees = async (): Promise<Employee[]> => {
 
 export const getEmployee = async (id: string): Promise<Employee> => {
   try {
-    const response = await axiosInstance.get<DtoSuccess<Employee>>(`/api/employee/${id}`);
+    const response = await axiosInstance.get<DtoSuccess<Employee>>(`/api/employees/${id}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -31,7 +31,7 @@ export const getEmployee = async (id: string): Promise<Employee> => {
 
 export const getEmployeeByUserId = async (userId: number): Promise<Employee> => {
   try {
-    const response = await axiosInstance.get<DtoSuccess<Employee>>(`/api/employee/userId/${userId}`);
+    const response = await axiosInstance.get<DtoSuccess<Employee>>(`/api/employees/userId/${userId}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -45,7 +45,7 @@ export const getEmployeeByUserId = async (userId: number): Promise<Employee> => 
 
 export const getAllEmployeesByHouseId = async (houseId: number): Promise<Employee[]> => {
   try {
-    const response = await axiosInstance.get<DtoSuccess<Employee[]>>(`/api/employee/houseId/${houseId}`);
+    const response = await axiosInstance.get<DtoSuccess<Employee[]>>(`/api/employees/houseId/${houseId}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -59,7 +59,7 @@ export const getAllEmployeesByHouseId = async (houseId: number): Promise<Employe
 
 export const patchEmployee = async (id: string, payload: any): Promise<Employee> => {
   try {
-    const response = await axiosInstance.patch<DtoSuccess<Employee>>(`/api/employee/${id}`, payload);
+    const response = await axiosInstance.patch<DtoSuccess<Employee>>(`/api/employees/${id}`, payload);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -73,7 +73,7 @@ export const patchEmployee = async (id: string, payload: any): Promise<Employee>
 
 export const deleteEmployee = async (id: string): Promise<string> => {
   try {
-    const response = await axiosInstance.delete<DtoSuccess<string>>(`/api/employee/${id}`);
+    const response = await axiosInstance.delete<DtoSuccess<string>>(`/api/employees/${id}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -87,7 +87,7 @@ export const deleteEmployee = async (id: string): Promise<string> => {
 
 export const createEmployee = async (employee: Employee): Promise<string> => {
   try {
-    const response = await axiosInstance.post<DtoSuccess<string>>(`/api/employee/`, employee);
+    const response = await axiosInstance.post<DtoSuccess<string>>(`/api/employees/`, employee);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -101,7 +101,7 @@ export const createEmployee = async (employee: Employee): Promise<string> => {
 
 export const createVisa = async (id: string, visa: VisaStatus): Promise<Employee> => {
   try {
-    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employee/${id}/visa`, visa);
+    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employees/${id}/visa`, visa);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -115,7 +115,7 @@ export const createVisa = async (id: string, visa: VisaStatus): Promise<Employee
 
 export const createDocument = async (id: string, document: Document): Promise<Employee> => {
   try {
-    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employee/${id}/document`, document);
+    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employees/${id}/document`, document);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -129,7 +129,7 @@ export const createDocument = async (id: string, document: Document): Promise<Em
 
 export const createAddress = async (id: string, address: Address): Promise<Employee> => {
   try {
-    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employee/${id}/address`, address);
+    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employees/${id}/address`, address);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -143,7 +143,7 @@ export const createAddress = async (id: string, address: Address): Promise<Emplo
 
 export const createContact = async (id: string, contact: Contact): Promise<Employee> => {
   try {
-    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employee/${id}/contact`, contact);
+    const response = await axiosInstance.post<DtoSuccess<Employee>>(`/api/employees/${id}/contact`, contact);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -157,7 +157,7 @@ export const createContact = async (id: string, contact: Contact): Promise<Emplo
 
 export const deleteContact = async (id: string, contactId: string): Promise<Employee> => {
   try {
-    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employee/${id}/contact/${contactId}`);
+    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employees/${id}/contact/${contactId}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -171,7 +171,7 @@ export const deleteContact = async (id: string, contactId: string): Promise<Empl
 
 export const deleteAddress = async (id: string, addressId: string): Promise<Employee> => {
   try {
-    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employee/${id}/address/${addressId}`);
+    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employees/${id}/address/${addressId}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -185,7 +185,7 @@ export const deleteAddress = async (id: string, addressId: string): Promise<Empl
 
 export const deleteVisa = async (id: string, visaId: string): Promise<Employee> => {
   try {
-    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employee/${id}/visa/${visaId}`);
+    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employees/${id}/visa/${visaId}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -199,7 +199,7 @@ export const deleteVisa = async (id: string, visaId: string): Promise<Employee> 
 
 export const deleteDocument = async (id: string, docId: string): Promise<Employee> => {
   try {
-    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employee/${id}/document/${docId}`);
+    const response = await axiosInstance.delete<DtoSuccess<Employee>>(`/api/employees/${id}/document/${docId}`);
     if(response && response.data && response.data.success && response.data.data) {
       return response.data.data;
     } else {
@@ -208,5 +208,34 @@ export const deleteDocument = async (id: string, docId: string): Promise<Employe
   } catch (error: unknown) {
     console.log(error);
     throw new Error("deleting contact for employee failed");
+  }
+};
+
+export const getEmployeeFromToken = async (): Promise<Employee> => {
+  try {
+    const response = await axiosInstance.get<DtoSuccess<Employee>>(`/api/employees/token/`,
+    );
+    if(response && response.data && response.data.success && response.data.data) {
+      return response.data.data;
+    } else {
+      throw new Error("retrieving employee failed");
+    }
+  } catch (error: unknown) {
+    console.log(error);
+    throw new Error("retrieving employee failed");
+  }
+};
+
+export const putEmployee = async (id: string, employee: Employee): Promise<Employee> => {
+  try {
+    const response = await axiosInstance.put<DtoSuccess<Employee>>(`/api/employees/${id}`, employee);
+    if(response && response.data && response.data.success && response.data.data) {
+      return response.data.data;
+    } else {
+      throw new Error("retrieving employee failed");
+    }
+  } catch (error: unknown) {
+    console.log(error);
+    throw new Error("retrieving employee failed");
   }
 };
