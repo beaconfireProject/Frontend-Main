@@ -30,7 +30,13 @@ interface OnboardingFormData {
   middleName?: string;
   preferredName?: string;
   avatarFile?: File | null; // File object for upload
-  currentAddress: string; // Required
+  address: {
+    addressLine1: string,
+    addressLine2: string,
+    city: string,
+    state: string,
+    zipCode: string
+  }; // Required
   cellPhone?: string;
   workPhone?: string;
   email: string; // Prefilled and read-only
@@ -62,6 +68,14 @@ interface OnboardingFormData {
   }[];
 }
 
+const address = {
+  street: '',
+  unit: '',
+  city: '',
+  state: '',
+  zipCode: ''
+ }
+
 // Default structure for a new emergency contact
 const defaultEmergencyContact = {
   firstName: '',
@@ -73,7 +87,7 @@ const defaultEmergencyContact = {
 };
 
 // Base URL for the Application Service (as provided)
-const APPLICATION_SERVICE_BASE_URL = 'http://localhost:9002/api/application';
+const APPLICATION_SERVICE_BASE_URL = 'http://localhost:9000/api/application';
 
 // Main EmployeeOnboardingPage component
 const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) => {
@@ -89,7 +103,13 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
     middleName: '',
     preferredName: '',
     avatarFile: null,
-    currentAddress: '',
+    address: {
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      state: '',
+      zipCode: '',
+    },
     cellPhone: '',
     workPhone: '',
     email: "abc@gmail.com", // Prefilled with constant email as requested
@@ -147,10 +167,20 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
 
   // Generic handler for input changes (text, select, textarea)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
-    if (type === 'checkbox') {
+    const { name, value, type} = e.target;
+    if (type === 'checkbox' && e.target instanceof HTMLInputElement) {
+      const checked = e.target.checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else {
+    } else if (name === 'addressLine1' || name === 'addressLine2' || name === 'city' || name === 'state' || name === 'zipCode') {
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [name]: value,
+        },
+      }));
+     }
+    else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
@@ -197,7 +227,7 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
   const handleNext = () => {
     // Basic validation for current step (you'll need to expand this)
     if (currentStep === 1) {
-      if (!formData.firstName || !formData.lastName || !formData.currentAddress || !formData.gender) {
+      if (!formData.firstName || !formData.lastName || !formData.address || !formData.gender) {
         showToast('Please fill in all required fields for Personal Information.', 'danger');
         return;
       }
@@ -277,6 +307,7 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
       // the backend example payload uses URLs. This implies files are uploaded
       // separately (e.g., to S3) and their URLs are passed here.
       // For this example, I'll use placeholder URLs or null if no file selected.
+
       const payload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -284,11 +315,11 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
         preferredName: formData.preferredName || null,
         avatar: formData.avatarFile ? `https://example.com/avatars/${formData.avatarFile.name}` : null, // Placeholder URL
         address: { // Assuming currentAddress maps to a single address object
-          street: formData.currentAddress, // This might need parsing if currentAddress is a single string
-          unit: null, // No unit field in your form, assuming flat address string
-          city: null, // No city field in your form
-          state: null, // No state field in your form
-          zipCode: null, // No zipCode field in your form
+          addressLine1: formData.address.addressLine1, // This might need parsing if currentAddress is a single string
+          addressLine2: formData.address.addressLine2, // No unit field in your form, assuming flat address string
+          city: formData.address.city, // No city field in your form
+          state: formData.address.state, // No state field in your form
+          zipCode: formData.address.zipCode, // No zipCode field in your form
         },
         cellPhone: formData.cellPhone || null,
         workPhone: formData.workPhone || null,
@@ -307,11 +338,11 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
           endDate: formData.workAuthEndDate || null,
           lastModificationDate: new Date().toISOString().split('T')[0], // Current date
         } : null,
-        workDoc: formData.workAuthDocFile ? `https://example.com/docs/${formData.workAuthDocFile.name}` : null, // Placeholder URL
+        workDoc: formData.workAuthDocFile ? `https://example.com/docs/workEAD.jpg` : null, // Placeholder URL
         driverLicense: formData.hasDriversLicense ? {
           licenseNumber: formData.driversLicenseNumber,
           driverLicenseExpiration: formData.driversLicenseExpiry,
-          licenseDoc: formData.driversLicenseDocFile ? `https://example.com/docs/${formData.driversLicenseDocFile.name}` : null, // Placeholder URL
+          licenseDoc: formData.driversLicenseDocFile ? `https://example.com/docs/driverlicense.jpg` : null, // Placeholder URL
         } : null,
         contact: formData.emergencyContacts.map(contact => ({
           firstName: contact.firstName,
@@ -335,9 +366,11 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
         )
       };
 
+      
+
       // 2. Make the POST request to create the onboarding application
       const createResponse = await axios.post(
-        `${APPLICATION_SERVICE_BASE_URL}/onboarding/`,
+        `${APPLICATION_SERVICE_BASE_URL}/onboarding`,
         payload,
         {
           headers: {
@@ -348,22 +381,28 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
       );
 
       // Assuming the response contains the application ID
-      const applicationId = createResponse.data?.data?.id; // Adjust based on actual API response structure
+      const empId = createResponse.data?.data?.id; // Adjust based on actual API response structure
       
-      if (!applicationId) {
+      const tk = localStorage.getItem("token");
+
+      if (!empId) {
         throw new Error('Failed to get application ID after submission.');
       }
 
+      if (tk) {
+        localStorage.setItem(tk, empId);
+      }
+
       // 3. Make the PATCH request to update the application status to "Completed"
-      await axios.patch(
-        `${APPLICATION_SERVICE_BASE_URL}/onboarding/application/${applicationId}/Completed`,
-        {}, // PATCH request body can be empty if status is in URL
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      // await axios.patch(
+      //   `${APPLICATION_SERVICE_BASE_URL}/onboarding/application/${applicationId}/Completed`,
+      //   {}, // PATCH request body can be empty if status is in URL
+      //   {
+      //     headers: {
+      //       'Authorization': `Bearer ${token}`
+      //     }
+      //   }
+      // );
 
       setSubmissionSuccessMessage('Your onboarding application has been submitted successfully. Please wait for HR to review your application.');
       showToast('Onboarding application submitted!', 'success');
@@ -461,8 +500,14 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
 
                       {/* Address */}
                       <div className="mb-3">
-                        <label className="form-label fw-bold">Current Address *</label>
-                        <textarea className="form-control" name="currentAddress" value={formData.currentAddress} onChange={handleChange} required />
+                            <label className="form-label fw-bold">Current Address *</label><br />
+                            <div className="mb-4">
+                              Address Line 1: <input type="text" className="form-control" name='addressLine1' value={formData.address.addressLine1} onChange={handleChange} required />
+                              Address Line 2: <input type="text" className="form-control" name='addressLine2' value={formData.address.addressLine2} onChange={handleChange} />
+                              City: <input type="text" className="form-control" name='city' value={formData.address.city} onChange={handleChange} required />
+                              State: <input type="text" className="form-control" name='state' value={formData.address.state} onChange={handleChange} required />
+                              ZipCode: <input type="text" className="form-control" name='zipCode' value={formData.address.zipCode} onChange={handleChange} required />
+                            </div>
                       </div>
 
                       {/* Phones */}
@@ -625,10 +670,10 @@ const EmployeeOnboardingPage: React.FC<{ userEmail: string }> = ({ userEmail }) 
                             <label className="form-label">Driver's License Expiration Date *</label>
                             <input type="date" className="form-control" name="driversLicenseExpiry" value={formData.driversLicenseExpiry} onChange={handleChange} required />
                           </div>
-                          <div className="mb-3">
+                          {/* <div className="mb-3">
                             <label className="form-label">Upload Driver's License Document *</label>
                             <input type="file" name="driversLicenseDocFile" accept=".pdf,.jpg,.png" onChange={handleFileChange} className="form-control" required />
-                          </div>
+                          </div> */}
                         </>
                       )}
 
