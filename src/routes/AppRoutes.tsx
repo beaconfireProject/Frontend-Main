@@ -19,6 +19,7 @@ import HREmployeeProfilesPage from '../pages/HREmployeeProfilesPage';
 import HRVisaManagementPage from '../pages/HRVisaManagementPage';
 import HRHiringManagementPage from '../pages/HRHiringManagementPage';
 import HRHouseManagementPage from '../pages/HRHouseManagementPage';
+import ApplicationDetailPage from '../pages/ApplicationDetailPage';
 
 const AppRoutes: React.FC = () => (
   <BrowserRouter>
@@ -110,6 +111,14 @@ const AppRoutes: React.FC = () => (
           </RoleGuard>
         }
       />
+
+      <Route
+        path="/application/detail/:id"
+        element={
+          <RoleGuard allowedRoles={['HR']}>
+            <ApplicationDetailPage />
+          </RoleGuard>
+        } />
 
       {/* Catch-all route redirects to login */}
       <Route path="*" element={<Navigate to="/login" />} />
